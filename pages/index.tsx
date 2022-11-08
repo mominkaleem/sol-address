@@ -11,9 +11,18 @@ const Home: NextPage = () => {
   const [address, setAddress] = useState("");
 
   const addressSubmittedHandler = (address: string) => {
-    const key = new web3.PublicKey(address);
-    setAddress(address);
-    setBalance(1000);
+    try {
+      setAddress(address);
+      const key = new web3.PublicKey(address);
+      const connection = new web3.Connection(web3.clusterApiUrl("devnet"));
+      connection.getBalance(key).then((balance) => {
+        setBalance(balance / web3.LAMPORTS_PER_SOL);
+      });
+    } catch (error) {
+      setAddress("");
+      setBalance(0);
+      alert("Please enter a Solana address");
+    }
   };
 
   return (
